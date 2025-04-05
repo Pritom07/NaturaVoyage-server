@@ -20,19 +20,17 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // await client.connect();
-    // await client.db("admin").command({ ping: 1 });
-
     const usersCollection = client.db("NaturaVoyage").collection("users");
+    const spotsCollection = client.db("NaturaVoyage").collection("spots");
 
-    //for signup
+    //for signup users
     app.post("/users", async (req, res) => {
       const newUser = req.body;
       const result = await usersCollection.insertOne(newUser);
       res.send(result);
     });
 
-    //for signin
+    //for signin users
     app.patch("/users", async (req, res) => {
       const signInUser = req.body;
       const userEmail = signInUser.email;
@@ -47,7 +45,7 @@ async function run() {
       res.send(result);
     });
 
-    //for google
+    //for google signin
     app.put("/users", async (req, res) => {
       const user = req.body;
       const userName = user.name;
@@ -70,7 +68,7 @@ async function run() {
       res.send(result);
     });
 
-    //for github(two put operations using same '/users' ,to make identical use '/users/github')
+    //for github signin(two put operations using same '/users' ,to make identical use '/users/github')
     app.put("/users/github", async (req, res) => {
       const user = req.body;
       console.log(user);
@@ -93,11 +91,17 @@ async function run() {
       res.send(result);
     });
 
+    //for adding spots
+    app.post("/spots", async (req, res) => {
+      const spotDetails = req.body;
+      const result = await spotsCollection.insertOne(spotDetails);
+      res.send(result);
+    });
+
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
   } finally {
-    // await client.close();
   }
 }
 run().catch(console.dir);
