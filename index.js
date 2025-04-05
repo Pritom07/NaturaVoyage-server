@@ -2,7 +2,7 @@ const dotenv = require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -95,6 +95,21 @@ async function run() {
     app.post("/spots", async (req, res) => {
       const spotDetails = req.body;
       const result = await spotsCollection.insertOne(spotDetails);
+      res.send(result);
+    });
+
+    //for getting all spot
+    app.get("/spots", async (req, res) => {
+      const cursor = spotsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //for getting specific spot
+    app.get("/spots/:id", async (req, res) => {
+      const spotId = req.params.id;
+      const query = { _id: new ObjectId(spotId) };
+      const result = await spotsCollection.findOne(query);
       res.send(result);
     });
 
