@@ -113,6 +113,13 @@ async function run() {
       res.send(result);
     });
 
+    app.delete("/spots/:id", async (req, res) => {
+      const spotId = req.params.id;
+      const query = { _id: new ObjectId(spotId) };
+      const result = await spotsCollection.deleteOne(query);
+      res.send(result);
+    });
+
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
