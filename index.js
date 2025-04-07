@@ -113,10 +113,44 @@ async function run() {
       res.send(result);
     });
 
+    //for user's specific added spot/MyList in the frontend.
+    //for @,spacebar,special characters -- encodeURIComponent used in clientSide and
+    //decodeURIComponent used in server side.
+    app.get("/spots/user/:email", async (req, res) => {
+      const userEmail = decodeURIComponent(req.params.email);
+      const query = { userEmail };
+      const cursor = spotsCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //for deleting a spot
     app.delete("/spots/:id", async (req, res) => {
       const spotId = req.params.id;
       const query = { _id: new ObjectId(spotId) };
       const result = await spotsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    //updating tourist spot data
+    app.patch("/spots/:id", async (req, res) => {
+      const spotId = req.params.id;
+      const UpdatedSpotInfo = req.body;
+      const filter = { _id: new ObjectId(spotId) };
+      const updateDoc = {
+        $set: {
+          location: UpdatedSpotInfo.location,
+          averageCost: UpdatedSpotInfo.averageCost,
+          seasonality: UpdatedSpotInfo.seasonality,
+          travelTime: UpdatedSpotInfo.travelTime,
+          totalVisitors: UpdatedSpotInfo.totalVisitors,
+          shortDescription: UpdatedSpotInfo.shortDescription,
+          photoURL: UpdatedSpotInfo.photoURL,
+          userName: UpdatedSpotInfo.userName,
+          userEmail: UpdatedSpotInfo.userEmail,
+        },
+      };
+      const result = await spotsCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
 
