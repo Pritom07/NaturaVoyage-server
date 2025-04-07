@@ -22,6 +22,9 @@ async function run() {
   try {
     const usersCollection = client.db("NaturaVoyage").collection("users");
     const spotsCollection = client.db("NaturaVoyage").collection("spots");
+    const countriesCollection = client
+      .db("NaturaVoyage")
+      .collection("countries");
 
     //for signup users
     app.post("/users", async (req, res) => {
@@ -151,6 +154,22 @@ async function run() {
         },
       };
       const result = await spotsCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
+
+    //for getting countries data
+    app.get("/countries", async (req, res) => {
+      const cursor = countriesCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    //getting country specific spots
+    app.get("/spots/country/:countryName", async (req, res) => {
+      const countryName = req.params.countryName;
+      const query = { countryName };
+      const cursor = spotsCollection.find(query);
+      const result = await cursor.toArray();
       res.send(result);
     });
 
